@@ -1,0 +1,106 @@
+--------------------------------------------------------------------------------------------------------------------------------------
+Write a PL/SQL block of code using Parameterized Cursor , that will merge the data available in the 
+newly created table . N_EmpId with the data available in the table O_EmpId. If the data in the first 
+table already exists in the second table then the data should be skipped.
+--------------------------------------------------------------------------------------------------------------------------------------
+
+Create Table:
+mysql> create table O_EmpId (empid int primary key, name varchar(20),department varchar(20));
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> create table N_EmpId (empid int primary key, name varchar(20),department varchar(20));
+Query OK, 0 rows affected (0.02 sec)
+
+Insert Data In Table:
+mysql> insert into O_EmpId VALUES (101,'SANIKA','Accounts'), (102,'YAMINI','IT'), (103,'VISHAL','IT')
+,(104,'NIKITA','Accounts'),(105,'AYAN','Accounts'),(106,'PRAJKTA','IT'),(107,'Viraj','Management'),(108
+,'ROHAN','Management'),(109,'ANUJ','IT');
+
+mysql> SELECT *FROM O_EmpId;
++-------+---------+------------+
+| empid | name | department |
++-------+---------+------------+
+| 101 | SANIKA | Accounts |
+| 102 | YAMINI | IT |
+| 103 | VISHAL | IT |
+| 104 | NIKITA | Accounts |
+| 105 | AYAN | Accounts |
+| 106 | PRAJKTA | IT |
+| 107 | Viraj | Management |
+| 108 | ROHAN | Management |
+| 109 | ANUJ | IT |
++-------+---------+------------+
+9 rows in set (0.00 sec)
+
+mysql> insert into N_EmpId VALUES 
+(101,'SANIKA','Accounts'),(102,'YAMINI','IT'),(103,'VISHAL','IT'),(104,'NIKITA','Accounts');
+Query OK, 4 rows affected (0.01 sec)
+
+mysql> SELECT *FROM N_EmpId;
++-------+--------+------------+
+| empid | name | department |
++-------+--------+------------+
+| 101 | SANIKA | Accounts |
+| 102 | YAMINI | IT |
+| 103 | VISHAL | IT |
+| 104 | NIKITA | Accounts |
++-------+--------+------------+
+4 rows in set (0.00 sec)
+
+CURSOR:
+mysql> DELIMITER //
+mysql> CREATE PROCEDURE merge()
+ -> BEGIN
+ -> DECLARE finish INTEGER DEFAULT 0;
+ -> DECLARE empid INTEGER DEFAULT 0;
+ -> DECLARE ename varchar(30) DEFAULT "";
+ -> DECLARE edept varchar(30) DEFAULT "";
+ -> DECLARE ecursor CURSOR FOR SELECT *FROM O_EmpId;
+ -> DECLARE CONTINUE HANDLER FOR NOT FOUND
+ -> BEGIN
+ -> SET finish =1;
+ -> END;
+ -> OPEN ecursor;
+ -> L:LOOP
+ -> FETCH ecursor into empid,ename,edept;
+ -> IF finish=1 THEN
+ -> LEAVE L;
+ -> END IF;
+ -> IF empid NOT IN (SELECT N_EmpId.empid from N_EmpId) THEN
+ -> INSERT INTO N_EmpId VALUES(empid,ename,edept);
+ -> END IF;
+ -> END LOOP;
+ -> CLOSE ecursor;
+ -> END;
+ -> //
+mysql> DELIMITER ;
+
+mysql> SELECT *FROM N_EmpId;
++-------+--------+------------+
+| empid | name | department |
++-------+--------+------------+
+| 101 | SANIKA | Accounts |
+| 102 | YAMINI | IT |
+| 103 | VISHAL | IT |
+| 104 | NIKITA | Accounts |
++-------+--------+------------+
+4 rows in set (0.00 sec)
+
+mysql> call merge();
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> SELECT *FROM N_EmpId;
++-------+---------+------------+
+| empid | name | department |
++-------+---------+------------+
+| 101 | SANIKA | Accounts |
+| 102 | YAMINI | IT |
+| 103 | VISHAL | IT |
+| 104 | NIKITA | Accounts |
+| 105 | AYAN | Accounts |
+| 106 | PRAJKTA | IT |
+| 107 | Viraj | Management |
+| 108 | ROHAN | Management |
+| 109 | ANUJ | IT |
++-------+---------+------------+
+9 rows in set (0.00 sec
