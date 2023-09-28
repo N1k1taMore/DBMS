@@ -1,0 +1,173 @@
+mysql> select *from Placement_Drive;
++----------+---------------+---------+-----------+
+| drive_id | pcompany_name | package | location  |
++----------+---------------+---------+-----------+
+|      101 | AMAZON        |   16000 | NEW YORK  |
+|      102 | ADOBE         |   18000 | DELHI     |
+|      103 | MYNTRA        |   22000 | BANGLORE  |
+|      104 | GOOGLE        |   39000 | HYDERABAD |
+|      105 | ORACLE        |   42000 | LONDON    |
+|      106 | COGNIZANT     |   60000 | PUNE      |
+|      107 | UBER          |   50000 | PUNE      |
+|      108 | MICROSOFT     |   60000 | MUMBAI    |
+|      111 | TCS           |   10000 | PUNE      |
+|      121 | WIPRO         |   12000 | MUMBAI    |
++----------+---------------+---------+-----------+
+10 rows in set (0.00 sec)
+
+mysql> select *from Training;
++------+---------------+-------+--------+
+| T_id | Tcompany_name | T_fee | T_year |
++------+---------------+-------+--------+
+|   11 | WIPRO         |  3500 |   2023 |
+|   12 | AMAZON        |  1000 |   2021 |
+|   13 | MYNTRA        |  2000 |   2022 |
+|   14 | TCS           |  1500 |   2023 |
+|   15 | ADOBE         |   794 |   2019 |
+|   16 | MICROSOFT     |  5000 |   2020 |
+|   17 | GOOGLE        |  6000 |   2021 |
+|   18 | ORACLE        |  4000 |   2023 |
+|   19 | UBER          |  5000 |   2025 |
+|   20 | COGNIZANT     |  3000 |   2024 |
++------+---------------+-------+--------+
+10 rows in set (0.00 sec)
+
+mysql> select *from student;
++------+----------+------+---------+------+----------+------------+
+| s_id | drive_id | T_id | s_name  | cgpa | s_branch | s_dob      |
++------+----------+------+---------+------+----------+------------+
+|    1 |      111 |   12 | Nikita  |   10 | Computer | 2002-11-12 |
+|    2 |      101 |   13 | Varsha  |   10 | Computer | 2005-08-12 |
+|    3 |      121 |   14 | Anuj    |    9 | IT       | 2003-11-02 |
+|    4 |      106 |   17 | Rucha   |    8 | IT       | 2003-07-04 |
+|    5 |      102 |   15 | Sakshi  |   10 | CIVIL    | 2004-08-12 |
+|    6 |      108 |   20 | Neha    |    8 | ENTC     | 2005-09-11 |
+|    7 |      107 |   18 | Sanika  |    7 | CIVIL    | 2003-11-09 |
+|    8 |      109 |   19 | Rohan   |    9 | IT       | 2003-10-12 |
+|    9 |      103 |   11 | Prajkta |    8 | IT       | 2000-10-05 |
+|   10 |      104 |   16 | Sandip  |    9 | ENTC     | 2001-11-08 |
++------+----------+------+---------+------+----------+------------+
+10 rows in set (0.00 sec)
+
+mysql> select *from student natural join Placement_Drive;
++----------+------+------+---------+------+----------+------------+---------------+---------+-----------+
+| drive_id | s_id | T_id | s_name  | cgpa | s_branch | s_dob      | pcompany_name | package | location  |
++----------+------+------+---------+------+----------+------------+---------------+---------+-----------+
+|      111 |    1 |   12 | Nikita  |   10 | Computer | 2002-11-12 | TCS           |   10000 | PUNE      |
+|      101 |    2 |   13 | Varsha  |   10 | Computer | 2005-08-12 | AMAZON        |   16000 | NEW YORK  |
+|      121 |    3 |   14 | Anuj    |    9 | IT       | 2003-11-02 | WIPRO         |   12000 | MUMBAI    |
+|      106 |    4 |   17 | Rucha   |    8 | IT       | 2003-07-04 | COGNIZANT     |   60000 | PUNE      |
+|      102 |    5 |   15 | Sakshi  |   10 | CIVIL    | 2004-08-12 | ADOBE         |   18000 | DELHI     |
+|      108 |    6 |   20 | Neha    |    8 | ENTC     | 2005-09-11 | MICROSOFT     |   60000 | MUMBAI    |
+|      107 |    7 |   18 | Sanika  |    7 | CIVIL    | 2003-11-09 | UBER          |   50000 | PUNE      |
+|      103 |    9 |   11 | Prajkta |    8 | IT       | 2000-10-05 | MYNTRA        |   22000 | BANGLORE  |
+|      104 |   10 |   16 | Sandip  |    9 | ENTC     | 2001-11-08 | GOOGLE        |   39000 | HYDERABAD |
++----------+------+------+---------+------+----------+------------+---------------+---------+-----------+
+9 rows in set (0.00 sec)
+
+mysql> select s.s_name,s.s_branch from student s join Placement_Drive pd on s.drive_id=pd.drive_id where pd.package=50000;
++--------+----------+
+| s_name | s_branch |
++--------+----------+
+| Sanika | CIVIL    |
++--------+----------+
+1 row in set (0.01 sec)
+
+mysql> select s.s_name,t.Tcompany_name from student s join Training t on s.T_id=t.T_id where t.T_fee>2000;
++---------+---------------+
+| s_name  | Tcompany_name |
++---------+---------------+
+| Rucha   | GOOGLE        |
+| Neha    | COGNIZANT     |
+| Sanika  | ORACLE        |
+| Rohan   | UBER          |
+| Prajkta | WIPRO         |
+| Sandip  | MICROSOFT     |
++---------+---------------+
+6 rows in set (0.00 sec)
+
+mysql> select *from Training t join student s on t.T_id=s.T_id where s.s_name="Nikita" and t.T_year=2021;
++------+---------------+-------+--------+------+----------+------+--------+------+----------+------------+
+| T_id | Tcompany_name | T_fee | T_year | s_id | drive_id | T_id | s_name | cgpa | s_branch | s_dob      |
++------+---------------+-------+--------+------+----------+------+--------+------+----------+------------+
+|   12 | AMAZON        |  1000 |   2021 |    1 |      111 |   12 | Nikita |   10 | Computer | 2002-11-12 |
++------+---------------+-------+--------+------+----------+------+--------+------+----------+------------+
+1 row in set (0.00 sec)
+
+mysql> select *from Training where T_year<2020;
++------+---------------+-------+--------+
+| T_id | Tcompany_name | T_fee | T_year |
++------+---------------+-------+--------+
+|   15 | ADOBE         |   794 |   2019 |
++------+---------------+-------+--------+
+1 row in set (0.00 sec)
+
+mysql> select count(T_year),Tcompany_name from Training where T_year<2020;
++---------------+---------------+
+| count(T_year) | Tcompany_name |
++---------------+---------------+
+|             1 | ADOBE         |
++---------------+---------------+
+1 row in set (0.00 sec)
+
+mysql> select s.s_name from student s join Placement_Drive p on p.drive_id=s.drive_id where pcompany_name="MICROSOFT" AND location="THANE";
+Empty set (0.00 sec)
+
+mysql> select s.s_name from student s join Training t on t.T_id=s.T_id where Tcompany_name="MICROSOFT" AND T_year=2020;
++--------+
+| s_name |
++--------+
+| Sandip |
++--------+
+1 row in set (0.00 sec)
+
+mysql> create view student_training as select student.s_id,student.s_name,student.cgpa,student.s_branch,student.s_Dob,Training.T_id,Training.Tcompany_name,Training.T_fee,Training.T_year from student,Training where student.T_id=Training.T_id;
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> select *from student_training;
++------+---------+------+----------+------------+------+---------------+-------+--------+
+| s_id | s_name  | cgpa | s_branch | s_Dob      | T_id | Tcompany_name | T_fee | T_year |
++------+---------+------+----------+------------+------+---------------+-------+--------+
+|    1 | Nikita  |   10 | Computer | 2002-11-12 |   12 | AMAZON        |  1000 |   2021 |
+|    2 | Varsha  |   10 | Computer | 2005-08-12 |   13 | MYNTRA        |  2000 |   2022 |
+|    3 | Anuj    |    9 | IT       | 2003-11-02 |   14 | TCS           |  1500 |   2023 |
+|    4 | Rucha   |    8 | IT       | 2003-07-04 |   17 | GOOGLE        |  6000 |   2021 |
+|    5 | Sakshi  |   10 | CIVIL    | 2004-08-12 |   15 | ADOBE         |   794 |   2019 |
+|    6 | Neha    |    8 | ENTC     | 2005-09-11 |   20 | COGNIZANT     |  3000 |   2024 |
+|    7 | Sanika  |    7 | CIVIL    | 2003-11-09 |   18 | ORACLE        |  4000 |   2023 |
+|    8 | Rohan   |    9 | IT       | 2003-10-12 |   19 | UBER          |  5000 |   2025 |
+|    9 | Prajkta |    8 | IT       | 2000-10-05 |   11 | WIPRO         |  3500 |   2023 |
+|   10 | Sandip  |    9 | ENTC     | 2001-11-08 |   16 | MICROSOFT     |  5000 |   2020 |
++------+---------+------+----------+------------+------+---------------+-------+--------+
+10 rows in set (0.00 sec)
+
+ysql> select *from simple_view;
++------+---------+----------+
+| s_id | s_name  | s_branch |
++------+---------+----------+
+|    1 | Nikita  | Computer |
+|    2 | Varsha  | Computer |
+|    3 | Anuj    | IT       |
+|    4 | Rucha   | IT       |
+|    5 | Sakshi  | CIVIL    |
+|    6 | Neha    | ENTC     |
+|    7 | Sanika  | CIVIL    |
+|    8 | Rohan   | IT       |
+|    9 | Prajkta | IT       |
+|   10 | Sandip  | ENTC     |
++------+---------+----------+
+10 rows in set (0.00 sec)
+
+mysql> insert into simple_view values(11,"Mansi","IT");
+Query OK, 1 row affected, 1 warning (0.03 sec)
+
+mysql> update simple_view set s_branch="COMPUTER" where s_id=11;
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> delete from simple_view where s_id=11;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> drop view simple_view;
+Query OK, 0 rows affected (0.00 sec)
+
