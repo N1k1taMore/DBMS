@@ -1,0 +1,103 @@
+--------------------------------------------------------------------------------------------------------------------
+Write a Stored Procedure namely proc_Grade for the categorization of student. If
+marks scoredby students in examination is <=1500 and marks>=990 then student will
+be placed in distinctioncategory if marks scored are between 989 and900 category is 
+first class, if marks 899and 825 category is Higher Second Class.
+---------------------------------------------------------------------------------------------------------------------
+
+Create Table:
+mysql> create table Stud_Marks(name varchar(40), total_marks int); 
+Query OK, 0 rows affected (0.03 sec) 
+
+mysql> create table result(rollno int primary key,name varchar(40), class varchar(40));
+Query OK, 0 rows affected (0.01 sec) 
+
+Insert Data In Table:
+mysql> insert into Stud_Marks values ('NIKITA',1410), ('RUCHA’,907), ('SAKSHI',864), ('VARSHA',1015),
+('SANIKA',953), ('TEJAL',837); 
+
+mysql> select * from Stud_Marks; 
++--------+-----------+ 
+| name | total_marks | 
++-------+------------+ 
+| NIKITA | 1410      | 
+| RUCHA | 907        | 
+| SAKSHI | 864       | 
+| VARSHA | 1015      | 
+| SANIKA | 953       | 
+| TEJAL | 837        | 
++-------+------------+ 
+
+PL/SQL stored procedure and function
+
+mysql> delimiter // 
+mysql> create function class (marks int) 
+ -> returns varchar(40) 
+ -> deterministic 
+ -> BEGIN 
+ -> declare grade varchar(30); 
+ -> IF (marks>=990 and marks<=1500) THEN 
+ -> set grade = 'Distinction Class'; 
+ -> ELSEIF (marks>=900 and marks<=989) THEN 
+ -> set grade = 'First Class'; 
+ -> ELSEIF (marks>=825 and marks<=899) THEN 
+ -> set grade = 'Higher Second Class'; 
+ -> ELSE 
+ -> set grade = '-----------'; 
+ -> END IF; 
+ -> return grade; 
+ -> END;// 
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> create procedure get_result(in rollno int, in name varchar(20)) 
+ -> BEGIN 
+ -> declare smarks int; 
+ -> declare grade varchar(40); 
+ -> declare stud_name varchar(40); 
+ -> select Stud_Marks.total_marks into smarks from Stud_marks where Stud_Marks.name = name;
+ -> select name into stud_name; 
+ -> select getclass(smarks) into grade; 
+ -> insert into result values(rollno,stud_name,grade); 
+ -> END;// 
+Query OK, 0 rows affected (0.00 sec) 
+
+mysql> create procedure proc_Grade() 
+ -> begin 
+ -> declare finished integer default 0; 
+ -> declare rno integer default (select count(*) from result);
+ -> declare sname varchar(40) default ""; 
+ -> declare totmarks int default 0; 
+ -> declare stud_cursor CURSOR FOR SELECT * FROM Stud_Marks; 
+ -> DECLARE CONTINUE HANDLER FOR NOT FOUND 
+ -> BEGIN 
+ -> SET finished = 1; 
+ -> END; 
+ -> OPEN stud_cursor; 
+ -> L: LOOP 
+ -> FETCH stud_cursor into sname,totmarks; 
+ -> IF (finished = 1) THEN 
+ -> LEAVE L; 
+ -> END IF; 
+ -> IF(sname NOT IN(select result.name from result)) THEN 
+ -> call get_result(rno,sname); 
+ -> set rno = rno + 1; 
+ -> END IF; 
+ -> END LOOP; 
+ -> 
+ -> CLOSE stud_cursor; 
+ -> end;// 
+Query OK, 0 rows affected (0.01 sec) 
+mysql> delimiter ; 
+ 
+
+mysql> select * from result; 
++----------+------------+---------------------------+
+| rollno | name | class | 
++----------+------------+---------------------------+ 
+| 0 | NIKITA | Distinction Class | 
+| 1 | RUCHA | First Class | 
+| 2 | SAKSHI | Higher Second Class | 
+| 3 | VARSHA | Distinction Class | 
+| 4 | SANIKA | First Class | 
+| 5 | TEJAL | Higher Second Class | 
++----------+------------+----------------------------+
