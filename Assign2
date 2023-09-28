@@ -1,0 +1,115 @@
+--------------------------------------------------------------------------------------------------------------------------------------
+Consider the following relational Schema.
+• Student( s_id,Drive_id,T_id,s_name,CGPA,s_branch,S_dob)
+• PlacementDrive( Drive_id,Pcompany_name,package,location)
+• Training ( T_id,Tcompany_name,T_Fee,T_year)
+--------------------------------------------------------------------------------------------------------------------------------------
+Create Tables:
+CREATE TABLE TRAINING (T_ID INT PRIMARY KEY NOT NULL,TCOMPANY VARCHAR(50),T_FEE 
+INT,T_YEAR INT);
+
+CREATE TABLE PLACEMENT (DRIVE_ID INT PRIMARY KEY,PCOMPANY VARCHAR(50),PACKAGE INT 
+,LOCATION VARCHAR(50));
+
+CREATE TABLE STUDENT (S_ID INT PRIMARY KEY NOT NULL,DRIVE_ID INT REFERENCES 
+PLACEMENT(DRIVE_ID),T_ID INT REFERENCES TRAINING(T_ID),S_NAME VARCHAR
+(50),CGPA FLOAT NOT NULL,S_BRANCH VARCHAR(50),S_DOB DATE);
+
+1.Insert Data:
+
+INSERT INTO TRAINING (T_ID,TCOMPANY,T_FEE,T_YEAR) VALUES (11,'WIPRO',35000,2023) 
+,(12,'AMAZON',10000,2021),(13,'MYNTRA',20000,2020),(14,'TCS',15000,2023),(15,'ADOBE',16000,20
+19),(16,'MICROSOFT',20000,2020),(17,'GOOGLE',12000,2021),(18,'ORACLE',30000,2019),(19,'UBER',
+17000,2018),(20,'COGNIZANT',18000,2019);
+
+INSERT INTO PLACEMENT (DRIVE_ID,PCOMPANY,PACKAGE,LOCATION) VALUES (
+101,'AMAZON',16000,'NEWYORK'),(102,'ADOBE',18000,'DELHI'),(103,'MYNTRA'
+,22000,'BANGLORE'),(104,'GOOGLE',39000,'HYDERABAD'),(105,'ORACLE',42000
+,'LONDON'),(106,'COGNIZANT',60000,'PUNE'),(107,'UBER',50000,'PUNE'),(10
+8,'MICROSOFT',60000,'MUMBAI'),(111,'TCS',10000,'PUNE'),(121,'WIPRO',120
+00,'MUMBAI');
+
+Insert into student values(1,111,12,"Nikita",10,"Computer",'2002-11-
+12'), (2,101,13,"Varsha",9.9,"Computer",'2005-08-
+12'),(3,121,14,"Anuj",9.8,"IT",'2003-11-
+02'),(4,106,17,"Rucha",9.9,"Computer",'2003-07-
+04'),(5,102,15,"Sakshi",10,"Civil",'2004-08-12')
+,(6,108,20,"Neha",8.9,"ENTC",'2005-09-
+11'),(7,107,18,"Sanika",8.8,"Civil",'2003-10-
+09'),(8,109,19,"Rohan",9,"IT",'2003-10-
+12'),(9,103,11,"Prajkta",8.9,"IT",'2001-10-
+5'),(10,104,16,"Sandip",9,"ENTC",'2001-11-08')
+
+2.Display all students details with branch ‘Computer ‘and ‘It’ and student name starting with 'a' or 'd'.
+select *from student where (S_BRANCH="Computer" or S_BRANCH="IT") and 
+S_NAME like ('a%' or 'd%');
+Empty set, 2 warnings (0.00 sec)
+
+3. list the number of different companies.(use of distinct)
+select count(distinct TCOMPANY) from Training;
++-------------------------------------+
+| count(distinct TCOMPANY) |
++-------------------------------------+
+| 10 |
++-------------------------------------+
+
+4. Give 15% increase in fee of the Training whose joining year is 2019.
+update Training set T_FEE=T_FEE+(T_FEE*0.15) where T_YEAR=2019;
+
+5. Delete Student details having CGPA score less than 7.
+delete from student where CGPA<7;
+
+6. Find the names of companies belonging to pune or Mumbai .
+select *from Placement where location="Mumbai" or location="Pune";
+
+7. Find the student name who joined training in 1-1-2019 as well as in 1-1-2021 
+select student.S_NAME from student left join Training on student.T_ID=Training.T_ID where 
+T_YEAR=2019 or T_YEAR=2021;
+
+8. Find the student name having maximum CGPA score 
+select max(CGPA),S_NAME from student;
++-----------+--------+
+| max(CGPA) | S_NAME |
++-----------+--------+
+| 10 | Nikita |
+
+names of students having CGPA score between 7 to 9 .
+select S_NAME,CGPA from student where CGPA between 7 and 9;
++---------+------+
+| S_NAME | CGPA |
++---------+------+
+| Neha | 8.9 |
+| Sanika | 8.8 |
+| Rohan | 9 |
+| Prajkta | 8.9 |
+| Sandip | 9 |
++---------+------+
+
+9. Display all Student name with T_id with decreasing order of Fees 
+select student.S_NAME,Training.T_FEE from student inner join Training 
+on student.T_ID=Training.T_ID order by T_FEE desc;
++---------+--------+
+| S_NAME | T_FEE |
++---------+--------+
+| Rucha | 12000 |
+| Sandip | 20000 |
+| Rohan | 17000 |
+| Sanika | 30000 |
+| Prajkta | 35000 |
+| Neha | 18000 |
+| Varsha | 20000 |
+| Anuj | 15000 |
+| Nikita | 10000 |
+| Sakshi | 18400 |
++---------+--------+
+
+10. Display PCompany name, S_name ,location and Package with Package 30K, 40K and 50k
+Select Placement.PCOMPANY,student.S_NAME,Placement.LOCATION,Placement.PACKAGE 
+from Placement inner join student on 
+Placement.DRIVE_ID=student.DRIVE_ID where PACKAGE=30000 or 
+PACKAGE=40000 or PACKAGE=50000;
++----------+--------+----------+---------+
+| PCOMPANY | S_NAME | LOCATION | PACKAGE |
++----------+--------+----------+---------+
+| UBER | Sanika | PUNE | 50000 |
++----------+--------+----------+---------
