@@ -1,0 +1,160 @@
+--------------------------------------------------------------------------------------------------------------------------------------
+Write a database trigger on library table .The System should keep track of the records that are 
+being updated or deleted .The old value of updated or deleted records should be added in 
+library_audit table.
+--------------------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE:
+mysql> create table library(book_id int primary key,title varchar(40),author varchar(20),copies int);
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> create table library_audit(book_id int,title varchar(40) , author varchar(20),copies int);
+Query OK, 0 rows affected (0.02 sec)
+
+TRIGGERS:
+
+mysql> Delimiter //
+mysql> CREATE TRIGGER BIN
+ -> BEFORE INSERT
+ -> ON library FOR EACH ROW
+ -> BEGIN
+ -> INSERT INTO library_audit VALUES(book_id,title,author,copies);
+ -> END;
+ -> //
+mysql> CREATE TRIGGER AIN
+ -> AFTER INSERT
+ -> ON library FOR EACH ROW
+ -> BEGIN
+ -> INSERT INTO library_audit VALUES(NEW.book_id,NEW.title,NEW.author,NEW.copies);
+ -> END;
+ -> //
+
+mysql> CREATE TRIGGER BUP
+ -> BEFORE UPDATE
+ -> ON library FOR EACH ROW
+ -> BEGIN
+ -> INSERT INTO library_audit VALUES(OLD.book_id,OLD.title,OLD.author,OLD.copies);
+ -> END;
+ -> //
+mysql> CREATE TRIGGER AUP
+ -> AFTER UPDATE
+ -> ON library FOR EACH ROW
+ -> BEGIN
+ -> INSERT INTO library_audit VALUES(NEW.book_id,NEW.title,NEW.author,NEW.copies);
+ -> END;
+ -> //
+
+mysql> CREATE TRIGGER BDEL
+ -> BEFORE DELETE
+ -> ON library FOR EACH ROW
+ -> BEGIN
+ -> INSERT INTO library_audit values(OLD.book_id,old.title,,old.author,old.copies);
+ -> END;
+ -> //
+mysql> CREATE TRIGGER ADEL
+ -> AFTER DELETE
+ -> ON library FOR EACH ROW
+ -> BEGIN
+ -> INSERT INTO library_audit values(OLD.book_id,old.title,old.author,old.copies);
+ -> END;
+ -> //
+mysql> DELIMITER ;
+
+INSERT DATA:
+mysql> INSERT INTO library VALUES(1,"Alice in Wonderland","Lewis Carrol",5),
+(2,"Pride and Prejudice","Jane Austen",8), (3,"Othello","Shakesphere",14) ,(4,"Ikigai","
+Hector Garcia",23),(5,"The Dark Room" ,"R.K.Narayan",18);
+Query OK, 4 rows affected (0.00 sec)
+
+mysql> select *from library_audit;
+
++------------+-----------------------------+-------------------+----------+
+| book_id | title | author | copies |
++------------+-----------------------------+-------------------+----------+
+| 1 | Alice in Wonderland | Lewis Carrol | 5 |
+| 2 | Pride and Prejudice | Jane Austen | 8 |
+| 3 | Othello | Shakesphere | 14 |
+| 4 | Ikigai | Hector Garcia | 23 |
+| 5 | The Dark Room | R.K.Narayan | 18 |
++------------+-----------------------------+-------------------+----------+
+
+mysql> select *from library_audit;
++------------+-----------------------------+------------------+----------+
+| book_id | title | author | copies |
++------------+-----------------------------+------------------+----------+
+| NULL | NULL | NULL | NULL |
+| 1 | Alice in Wonderland | Lewis Carrol | 5 |
+| NULL | NULL | NULL | NULL |
+| 2 | Pride and Prejudice | Jane Austen | 8 |
+| NULL | NULL | NULL | NULL |
+| 3 | Othello | Shakesphere | 14 |
+| NULL | NULL | NULL | NULL |
+| 4 | Ikigai | Hector Garcia | 23 |
+| NULL | NULL | NULL | NULL |
+| 5 | The Dark Room | R.K.Narayan | 18 |
++------------+-----------------------------+-------------------+---------+
+
+UPDATE:
+mysql> update library set copies=15 where title='Alice in Wonderland';
+
+mysql> select *from library_audit;
++------------+-----------------------------+-------------------+----------+
+| book_id | title | author | copies |
++------------+-----------------------------+-------------------+----------+
+| 1 | Alice in Wonderland | Lewis Carrol | 15 |
+| 2 | Pride and Prejudice | Jane Austen | 8 |
+| 3 | Othello | Shakesphere | 14 |
+| 4 | Ikigai | Hector Garcia | 23 |
+| 5 | The Dark Room | R.K.Narayan | 18 |
++------------+-----------------------------+-------------------+----------+
+
+mysql> select *from library_audit;
++------------+-----------------------------+------------------+----------+
+| book_id | title | author | copies |
++------------+-----------------------------+------------------+----------+
+| NULL | NULL | NULL | NULL |
+| 1 | Alice in Wonderland | Lewis Carrol | 5 |
+| NULL | NULL | NULL | NULL |
+| 2 | Pride and Prejudice | Jane Austen | 8 |
+| NULL | NULL | NULL | NULL |
+| 3 | Othello | Shakesphere | 14 |
+| NULL | NULL | NULL | NULL |
+| 4 | Ikigai | Hector Garcia | 23 |
+| NULL | NULL | NULL | NULL |
+| 5 | The Dark Room | R.K.Narayan | 18 |
+| 1 | Alice in Wonderland | Lewis Carrol | 5 |
+| 1 | Alice in Wonderland | Lewis Carrol | 15 |
++------------+------------------------------+------------------+---------+
+
+DELETE:
+mysql> delete from library where title='Pride and Prejudice';
+
+mysql> select *from library_audit;
++------------+-----------------------------+-------------------+----------+
+| book_id | title | author | copies |
++------------+-----------------------------+-------------------+----------+
+| 1 | Alice in Wonderland | Lewis Carrol | 15 |
+| 3 | Othello | Shakesphere | 14 |
+| 4 | Ikigai | Hector Garcia | 23 |
+| 5 | The Dark Room | R.K.Narayan | 18 |
++------------+-----------------------------+-------------------+----------+
+
+mysql> select *from library_audit;
++------------+-----------------------------+------------------+----------+
+| book_id | title | author | copies |
++------------+-----------------------------+------------------+----------+
+| NULL | NULL | NULL | NULL |
+| 1 | Alice in Wonderland | Lewis Carrol | 5 |
+| NULL | NULL | NULL | NULL |
+| 2 | Pride and Prejudice | Jane Austen | 8 |
+| NULL | NULL | NULL | NULL |
+| 3 | Othello | Shakesphere | 14 |
+| NULL | NULL | NULL | NULL |
+| 4 | Ikigai | Hector Garcia | 23 |
+| NULL | NULL | NULL | NULL |
+| 5 | The Dark Room | R.K.Narayan | 18 |
+| 1 | Alice in Wonderland | Lewis Carrol | 5 |
+| 1 | Alice in Wonderland | Lewis Carrol | 15 |
+| 2 | Pride and Prejudice | Jane Austen | 8 |
+| 2 | Pride and Prejudice | Jane Austen | 8 |
++------------+-----------------------------+-------------------+---------
