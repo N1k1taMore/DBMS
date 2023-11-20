@@ -1,0 +1,222 @@
+db.createCollection("Teachers");
+
+db.Teachers.insertOne({name:"nikita",qualification:"be",desig:"professor",deptno:1,deptname:"computer",exp:{industry:7,teaching:9},salary:120000,joindate:new Date("2021-11-08")})
+
+db.Teachers.insertOne({name:"anuj",qualification:"me",desig:"lab assistant",deptno:2,deptname:"it",exp:{industry:5,teaching:7},salary:100000,joindate:new Date("2022-12-08")})
+
+db.Teachers.insertMany([{name:"rohan",qualification:"ba",desig:"hod",deptno:3,deptname:"entc",exp:{industry:9,teaching:8},salary:180000,joindate:new Date("2020-10-18")},{name:"rucha",qualification:"mtech",desig:"professor",deptno:1,deptname:"computer",exp:{industry:9,teaching:9},salary:160000,joindate:new Date("2019-10-28")}])
+
+ db.Teachers.find().pretty()
+{
+        "_id" : ObjectId("6547228007f63e22c51446f3"),
+        "name" : "nikita",
+        "qualification" : "be",
+        "desig" : "professor",
+        "deptno" : 1,
+        "deptname" : "computer",
+        "exp" : {
+                "industry" : 7,
+                "teaching" : 9
+        },
+        "salary" : 120000,
+        "joindate" : ISODate("2021-11-08T00:00:00Z")
+}
+{
+        "_id" : ObjectId("6547229107f63e22c51446f4"),
+        "name" : "anuj",
+        "qualification" : "me",
+        "desig" : "lab assistant",
+        "deptno" : 2,
+        "deptname" : "it",
+        "exp" : {
+                "industry" : 5,
+                "teaching" : 7
+        },
+        "salary" : 100000,
+        "joindate" : ISODate("2022-12-08T00:00:00Z")
+}
+{
+        "_id" : ObjectId("6547234807f63e22c51446f5"),
+        "name" : "rohan",
+        "qualification" : "ba",
+        "desig" : "hod",
+        "deptno" : 3,
+        "deptname" : "entc",
+        "exp" : {
+                "industry" : 9,
+                "teaching" : 8
+        },
+        "salary" : 180000,
+        "joindate" : ISODate("2020-10-18T00:00:00Z")
+}
+{
+        "_id" : ObjectId("6547234807f63e22c51446f6"),
+        "name" : "rucha",
+        "qualification" : "mtech",
+        "desig" : "professor",
+        "deptno" : 1,
+        "deptname" : "computer",
+        "exp" : {
+                "industry" : 9,
+                "teaching" : 9
+        },
+        "salary" : 160000,
+        "joindate" : ISODate("2019-10-28T00:00:00Z")
+}
+
+ db.Teachers.find({deptname:"computer"}).pretty()
+{
+        "_id" : ObjectId("6547228007f63e22c51446f3"),
+        "name" : "nikita",
+        "qualification" : "be",
+        "desig" : "professor",
+        "deptno" : 1,
+        "deptname" : "computer",
+        "exp" : {
+                "industry" : 7,
+                "teaching" : 9
+        },
+        "salary" : 120000,
+        "joindate" : ISODate("2021-11-08T00:00:00Z")
+}
+{
+        "_id" : ObjectId("6547234807f63e22c51446f6"),
+        "name" : "rucha",
+        "qualification" : "mtech",
+        "desig" : "professor",
+        "deptno" : 1,
+        "deptname" : "computer",
+        "exp" : {
+                "industry" : 9,
+                "teaching" : 9
+        },
+        "salary" : 160000,
+        "joindate" : ISODate("2019-10-28T00:00:00Z")
+}
+
+ db.Teachers.find({$or:[{deptname:"computer"},{deptname:"it"},{deptname:"fe"}]}).pretty()
+{
+        "_id" : ObjectId("6547228007f63e22c51446f3"),
+        "name" : "nikita",
+        "qualification" : "be",
+        "desig" : "professor",
+        "deptno" : 1,
+        "deptname" : "computer",
+        "exp" : {
+                "industry" : 7,
+                "teaching" : 9
+        },
+        "salary" : 120000,
+        "joindate" : ISODate("2021-11-08T00:00:00Z")
+}
+{
+        "_id" : ObjectId("6547229107f63e22c51446f4"),
+        "name" : "anuj",
+        "qualification" : "me",
+        "desig" : "lab assistant",
+        "deptno" : 2,
+        "deptname" : "it",
+        "exp" : {
+                "industry" : 5,
+                "teaching" : 7
+        },
+        "salary" : 100000,
+        "joindate" : ISODate("2022-12-08T00:00:00Z")
+}
+{
+        "_id" : ObjectId("6547234807f63e22c51446f6"),
+        "name" : "rucha",
+        "qualification" : "mtech",
+        "desig" : "professor",
+        "deptno" : 1,
+        "deptname" : "computer",
+        "exp" : {
+                "industry" : 9,
+                "teaching" : 9
+        },
+        "salary" : 160000,
+        "joindate" : ISODate("2019-10-28T00:00:00Z")
+}
+
+ db.Teachers.find({$and:[{$or:[{deptname:"computer"},{deptname:"it"},{deptname:"entc"}]},{$and:[{salary:{$gte:70000}},{salary:{$lte:100000}}]}]}).pretty()
+{
+        "_id" : ObjectId("6547229107f63e22c51446f4"),
+        "name" : "anuj",
+        "qualification" : "me",
+        "desig" : "lab assistant",
+        "deptno" : 2,
+        "deptname" : "it",
+        "exp" : {
+                "industry" : 5,
+                "teaching" : 7
+        },
+        "salary" : 100000,
+        "joindate" : ISODate("2022-12-08T00:00:00Z")
+}
+
+ db.Teachers.updateOne({name:"nikita"},{$set:{joindate:new Date("2020-11-09")}},{upsert:true})
+
+db.Teachers.find({},{_id:0,name:1,exp:1}).sort({deptno:1})
+{ "name" : "nikita", "exp" : { "industry" : 7, "teaching" : 9 } }
+{ "name" : "rucha", "exp" : { "industry" : 9, "teaching" : 9 } }
+{ "name" : "anuj", "exp" : { "industry" : 5, "teaching" : 7 } }
+{ "name" : "rohan", "exp" : { "industry" : 9, "teaching" : 8 } }
+
+
+db.Teachers.save({name:"tejal",deptno:4,deptname:"civil"})
+WriteResult({ "nInserted" : 1 })
+
+ db.Teachers.updateMany({"exp.teaching":{$lt:8}},{$set:{desig:"professor"}})
+
+ db.Teachers.find().limit(3).sort({"exp.teaching":1}).pretty()
+{
+        "_id" : ObjectId("6547229107f63e22c51446f4"),
+        "name" : "anuj",
+        "qualification" : "me",
+        "desig" : "professor",
+        "deptno" : 2,
+        "deptname" : "it",
+        "exp" : {
+                "industry" : 5,
+                "teaching" : 7
+        },
+        "salary" : 100000,
+        "joindate" : ISODate("2022-12-08T00:00:00Z")
+}
+{
+        "_id" : ObjectId("6547234807f63e22c51446f5"),
+        "name" : "rohan",
+        "qualification" : "ba",
+        "desig" : "hod",
+        "deptno" : 3,
+        "deptname" : "entc",
+        "exp" : {
+                "industry" : 9,
+                "teaching" : 8
+        },
+        "salary" : 180000,
+        "joindate" : ISODate("2020-10-18T00:00:00Z")
+}
+{
+        "_id" : ObjectId("6547228007f63e22c51446f3"),
+        "name" : "nikita",
+        "qualification" : "be",
+        "desig" : "principal",
+        "deptno" : 1,
+        "deptname" : "computer",
+        "exp" : {
+                "industry" : 8,
+                "teaching" : 9
+        },
+        "salary" : 120000,
+        "joindate" : ISODate("2020-11-09T00:00:00Z")
+}
+
+map-reduce
+>var map=function(){emit(this.deptname,this.salary)}
+>var reduce =function(deptname,salary){return Array.sum(salary);};
+>db.Teachers.mapReduce(map,reduce,{out:"Result"});
+ db.Result.find();
+{ "_id" : "entc", "value" : 180000 }
+{ "_id" : "computer", "value" : 280000 }
+{ "_id" : "it", "value" : 100000 }
