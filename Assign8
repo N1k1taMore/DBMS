@@ -1,0 +1,226 @@
+import java.sql.*;
+
+import java.util.*;
+
+public class assign8
+
+{
+	public static void main(String args[])
+
+	{
+
+		try 
+
+		{
+
+			//step 1 Register the driver class
+
+			Class.forName("com.mysql.jdbc.Driver");
+
+			//step 2 establish connection
+
+			Connection con=DriverManager.getConnection("jdbc:mysql://10.10.15.96:3306/sql33db","sql33","sql33");
+			//step 3 create the statement object
+
+			Statement stmt=con.createStatement();
+
+			Scanner obj = new Scanner(System.in);
+
+			String ch= "y";
+
+			int c =0;
+
+			//step 4 to execute the queries - execute(string sql) , executeUpdate(),executeQuery(string a)
+
+			stmt.executeUpdate("create table patient9(patient_id int unsigned not null auto_increment, patient_name varchar(20) ,Contact_No int , blood_grp varchar(10) , Quantity float,primary key(patient_id))");
+
+			System.out.println("table created!!");
+
+			while(ch!="n")
+
+			{
+
+				System.out.println("--------------------MENU---------------------");
+
+				System.out.println("1. Insert record");
+
+				System.out.println("2. Update record");
+
+				System.out.println("3. Delete record");
+
+				System.out.println("4. Show table");
+
+				System.out.println("Enter your choice: ");
+
+				c = obj.nextInt();
+
+				switch(c)
+
+				{
+
+				case 1:
+
+					String name = new String("");
+
+					System.out.println("Enter Name: ");
+
+					name = obj.next();
+
+					System.out.println("Enter contact no: ");
+
+					long cno = 0;
+
+					cno = obj.nextLong();
+
+					System.out.println("Enter Blood grp: ");
+
+					String bgrp = new String("");
+
+					bgrp = obj.next();
+
+					float qty = 0;
+
+					System.out.println("Enter Quantity(Lit): ");
+
+					qty = obj.nextFloat();
+
+					String sql = "INSERT INTO patient9(patient_name ,Contact_No ,blood_grp , Quantity)"+"VALUES (?, ?, ? , ?)";
+
+					PreparedStatement pstmt=  con.prepareStatement(sql);
+
+					pstmt.setString(1, name);
+
+					pstmt.setLong(2, cno);
+
+					pstmt.setString(3, bgrp);
+
+					pstmt.setFloat(4, qty);
+
+					pstmt.executeUpdate();
+
+					System.out.println("Record Inserted!!");
+
+					break;
+
+				case 2:
+
+					
+
+					int id =0;
+
+					System.out.println("Enter Patient ID: ");
+
+					id = obj.nextInt();
+
+					String name1 = new String("");
+
+					System.out.println("Enter Name: ");
+
+					name1 = obj.next();
+
+					int cno1 = 0;
+
+					System.out.println("Enter Contactno: ");
+
+					cno1 = obj.nextInt();
+
+					System.out.println("Enter Blood grp: ");
+
+					String bgrp1 = new String("");
+
+					bgrp1 = obj.next();
+
+					float qty1 = 0;
+
+					System.out.println("Enter Quantity(Lit): ");
+
+					qty1 = obj.nextFloat();
+
+					
+
+					
+
+					sql = "UPDATE patient9 SET patient_name = ? , Contact_No=? , blood_grp=? ,Quantity=? WHERE patient_id=?";
+
+					//stmt.executeUpdate(sql);
+
+					PreparedStatement pstmt1=  con.prepareStatement(sql);
+
+					pstmt1.setInt(5, id);
+
+					pstmt1.setString(1, name1);
+
+					pstmt1.setLong(2, cno1);
+
+					pstmt1.setString(3, bgrp1);
+
+					pstmt1.setFloat(4, qty1);
+
+					pstmt1.executeUpdate();
+
+					
+
+					System.out.println("Record Updated!!");
+
+					break;
+
+				case 3:
+
+					int id1 =0;
+
+					System.out.println("Enter Patient ID: ");
+
+					id1 = obj.nextInt();
+
+					
+
+					sql = "DELETE FROM patient99 WHERE patient_id=?";
+
+					PreparedStatement pstmt2=  con.prepareStatement(sql);
+
+					pstmt2.setInt(1, id1);
+
+					//stmt.executeUpdate(sql);
+
+					pstmt2.executeUpdate();
+
+					
+
+					System.out.println("Record Deleted!!");
+
+					break;
+
+				case 4:
+
+					ResultSet r = stmt.executeQuery("select *from patient9");
+
+					while(r.next())
+
+					{
+
+						System.out.println(r.getInt(1)+"\t"+r.getString(2)+"\t"+r.getInt(3)+"\t"+r.getString(4)+"\t"+r.getFloat(5));
+
+					}
+
+					break;
+
+				default:
+
+					System.out.println("Enter Valid choice!!!\n");
+				}
+				System.out.println("Do you want to continue(y/n): ");
+				ch = obj.next();
+			}				
+
+		}
+
+		catch(ClassNotFoundException | SQLException e)
+
+		{
+			System.out.println(e);
+
+		}	
+
+	}
+
+}
